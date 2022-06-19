@@ -29,7 +29,9 @@ func (u *UserServiceImpl) CreateUser(user *models.User) error {
 
 func (u *UserServiceImpl) GetUser(name *string) (*models.User, error) {
 	var user *models.User
-	query := bson.D{bson.E{Key: "name", Value: name}}
+	userid, _ := primitive.ObjectIDFromHex(*name)
+
+	query := bson.D{bson.E{Key: "_id", Value: userid}}
 	err := u.usercollection.FindOne(u.ctx, query).Decode(&user)
 	return user, err
 }

@@ -16,9 +16,12 @@ import (
 var (
 	server         *gin.Engine
 	userservice    services.UserService
+	shoeservice    services.ShoeService
 	usercontroller controller.UserController
+	shoecontroller controller.ShoeController
 	ctx            context.Context
 	usercollection *mongo.Collection
+	shoecollection *mongo.Collection
 	mongoclient    *mongo.Client
 	err            error
 )
@@ -38,8 +41,11 @@ func init() {
 	fmt.Println("mongo connection establised")
 
 	usercollection = mongoclient.Database("userdb").Collection("users")
+	shoecollection = mongoclient.Database("userdb").Collection("shoes")
 	userservice = services.NewUserService(usercollection, ctx)
+	shoeservice = services.NewShoeService(shoecollection, ctx)
 	usercontroller = controller.New(userservice)
+	shoecontroller = controller.NewShoeServicew(shoeservice)
 	server = gin.Default()
 }
 
@@ -49,6 +55,7 @@ func main() {
 
 	basepath := server.Group("/v1")
 	usercontroller.RegisterUserRoutes(basepath)
+	shoecontroller.RegisterShoeRoutes(basepath)
 
 	log.Fatal(server.Run(":9090"))
 }
